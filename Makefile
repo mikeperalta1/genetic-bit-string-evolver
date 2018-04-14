@@ -63,6 +63,7 @@ build-objects:	\
 				$(BUILD_DIR)/$(OBJECT_PREFIX)Random.o \
 				$(BUILD_DIR)/$(OBJECT_PREFIX)Population.o \
 				$(BUILD_DIR)/$(OBJECT_PREFIX)Breeder.o \
+				$(BUILD_DIR)/$(OBJECT_PREFIX)RouletteWheel.o \
 				$(BUILD_DIR)/$(OBJECT_PREFIX)Chromosome.o
 	$(call say,Done building objects)
 
@@ -91,6 +92,19 @@ $(BUILD_DIR)/$(OBJECT_PREFIX)Breeder.o:	\
 		Breeder.cpp \
 		$(CFLAGS)
 	$(call say,Built $@)
+
+
+#	RouletteWheel.o
+$(BUILD_DIR)/$(OBJECT_PREFIX)RouletteWheel.o:	\
+											RouletteWheel.h \
+											RouletteWheel.cpp \
+											Defines.h Enums.h Includes.h \
+											Random.h
+	$(CC) -o $@ \
+		RouletteWheel.cpp \
+		$(CFLAGS)
+	$(call say,Built $@)
+
 
 
 #	Chromosome.o
