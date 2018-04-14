@@ -12,11 +12,16 @@
 #include <mutex>
 #include <algorithm>
 #include <memory>
+#include <iostream>
 
 
 //
 namespace BitEvolver
 {
+	//
+	using std::cout;
+	using std::endl;
+	
 	//
 	RouletteWheel::RouletteWheel()
 	{
@@ -115,7 +120,7 @@ namespace BitEvolver
 		
 		//	Find the corresponding chromosome
 		for ( i=0; i<this->wheel_slots.size(); i++ ) {
-			if ( this->wheel_slots[i].first <= spin ) {
+			if ( this->wheel_slots[i].first >= spin ) {
 				return this->wheel_slots[i].second;
 			}
 		}
@@ -172,6 +177,9 @@ namespace BitEvolver
 			
 			//
 			pairs.push_back(pair);
+			
+			//
+			//cout << "[" << pair.first << "]" << chromosome->ToString() << endl;
 		}
 		
 		return pairs;

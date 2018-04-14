@@ -535,6 +535,10 @@ namespace BitEvolver
 		papa = this->roulette_wheel->Spin();
 		
 		//
+		//cout << "Roulette Wheel (mama): " << mama->ToString() << endl;
+		//cout << "Roulette Wheel (papa): " << papa->ToString() << endl;
+		
+		//
 		kiddo = this->breeder->Breed(
 			mama, papa,
 			this->crossover_type,
