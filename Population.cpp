@@ -16,6 +16,7 @@
 #include <iostream>
 #include <algorithm>
 #include <thread>
+#include <functional>
 
 
 //
@@ -198,6 +199,45 @@ namespace BitEvolver
 	}
 	
 	//
+	void Population::EvaluateFitness(std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback)
+	{
+		//
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes_copy;
+		std::vector<std::shared_ptr<std::thread>> threads;
+		std::shared_ptr<std::thread> thread;
+		int
+			threads_count,
+			i
+			;
+		
+		//	Make a new vector containing all current chromosomes
+		this->population_modification_mutex.lock();
+		_chromosomes_copy = std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>>(
+			new std::vector<std::shared_ptr<Chromosome>>()
+		);
+		for ( i=0; i<(int)this->chromosomes.size(); i++ ) {
+			_chromosomes_copy->push_back( this->chromosomes[i] );
+		}
+		this->population_modification_mutex.unlock();
+		
+		//	Spawn threads
+		threads_count = this->GetThreadCountSuggestion();
+		for ( i=0; i<threads_count; i++) {
+			
+			//
+			thread = std::shared_ptr<std::thread>(
+				new std::thread(&Population::EvaluateFitness_Thread, this, _chromosomes_copy, evaluation_callback)
+			);
+			threads.push_back(thread);
+		}
+		
+		//	Wait for threads to finish
+		for ( i=0; i<threads_count; i++ ) {
+			threads[i]->join();
+		}
+	}
+	
+	//
 	void Population::Evolve()
 	{
 		//
@@ -370,6 +410,41 @@ namespace BitEvolver
 				population_new->push_back(kiddo);
 			}
 			this->breed_mutex.unlock();
+		}
+	}
+	
+	//
+	void Population::EvaluateFitness_Thread(
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes,
+		std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback
+	)
+	{
+		//
+		std::shared_ptr<Chromosome> chromosome;
+		double fitness;
+		
+		//
+		while (true)
+		{
+			//	Grab a free chromosome
+			this->evaluate_fitness_mutex.lock();
+			chromosome = nullptr;
+			if ( _chromosomes->size() ) {
+				chromosome = _chromosomes->at(_chromosomes->size()-1);
+				_chromosomes->pop_back();
+			}
+			this->evaluate_fitness_mutex.unlock();
+			
+			//	Call the evaluation callback
+			if ( chromosome != nullptr ) {
+				fitness = evaluation_callback(chromosome);
+				chromosome->SetFitness(fitness);
+			}
+			
+			//	We're done if there was nothing to grab
+			else{
+				break;
+			}
 		}
 	}
 	

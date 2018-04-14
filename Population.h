@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 #include <mutex>
+#include <functional>
 
 
 //
@@ -56,6 +57,9 @@ namespace BitEvolver
 			double GetMutationRate();
 			
 			//
+			void EvaluateFitness(std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback);
+			
+			//
 			void Evolve();
 			int GetEvolutionNumber();
 			
@@ -90,7 +94,11 @@ namespace BitEvolver
 			std::shared_ptr<class RouletteWheel> roulette_wheel;
 			
 			//
-			std::mutex breed_mutex;
+			std::recursive_mutex
+				population_modification_mutex,
+				breed_mutex,
+				evaluate_fitness_mutex
+				;
 			
 			//
 			void InitRandomGenerator();
@@ -103,6 +111,12 @@ namespace BitEvolver
 			//
 			void BreedNewPopulation(std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> population_new, int size);
 			void BreedNewPopulation_Thread(std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> population_new, int size);
+			
+			//
+			void EvaluateFitness_Thread(
+				std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes,
+				std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback
+			);
 			
 			//
 			std::shared_ptr<Chromosome> BreedChild();
