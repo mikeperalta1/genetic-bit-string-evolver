@@ -150,10 +150,45 @@ namespace BitEvolver
 	}
 	
 	//
+	void Population::SetCrossoverPoint(double p)
+	{
+		//
+		this->crossover_point = p;
+	}
+	
+	//
+	double Population::GetCrossoverPoint()
+	{
+		//
+		return this->crossover_point;
+	}
+	
+	//
+	void Population::SetCrossoverType(Enums::CrossoverType t)
+	{
+		//
+		this->crossover_type = t;
+	}
+	
+	//
+	Enums::CrossoverType Population::GetCrossoverType()
+	{
+		//
+		return this->crossover_type;
+	}
+	
+	//
 	void Population::SetMutationRate(double r)
 	{
 		//
 		this->mutation_rate = r;
+	}
+	
+	//
+	double Population::GetMutationRate()
+	{
+		//
+		return this->mutation_rate;
 	}
 	
 	//
@@ -332,7 +367,12 @@ namespace BitEvolver
 		papa = this->PickChromosomeForBreeding();
 		
 		//
-		kiddo = this->breeder->Breed(mama, papa, BIT_EVOLVER_POPULATION_DEFAULT_CROSSOVER, this->mutation_rate);
+		kiddo = this->breeder->Breed(
+			mama, papa,
+			this->crossover_type,
+			this->crossover_point,
+			this->mutation_rate
+		);
 		
 		return kiddo;
 	}

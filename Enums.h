@@ -3,7 +3,20 @@
 
 
 //
-
+namespace BitEvolver
+{
+	//
+	namespace Enums
+	{
+		//
+		enum class CrossoverType
+		{
+			//
+			None,
+			Sexual
+		};
+	};
+};
 
 
 #endif

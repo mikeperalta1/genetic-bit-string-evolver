@@ -28,6 +28,7 @@ namespace BitEvolver
 	std::shared_ptr<Chromosome> Breeder::Breed(
 		std::shared_ptr<Chromosome> mama,
 		std::shared_ptr<Chromosome> papa,
+		Enums::CrossoverType crossover_type,
 		double crossover_rate,
 		double mutation_rate
 	)
@@ -36,18 +37,15 @@ namespace BitEvolver
 		std::shared_ptr<Chromosome> kiddo;
 		int bit_length;
 		
-		//	For now, don't crossover unless the bit lengths are identical
+		//
 		bit_length = mama->GetBitCount();
-		if ( papa->GetBitCount() != bit_length ) {
-			throw std::runtime_error("Breeder::Breed() - Incompatible parents");
-		}
 		
 		//	Directly copy the mama
 		kiddo = std::shared_ptr<Chromosome>(new Chromosome(this->random, bit_length));
 		*kiddo = *mama;
 		
 		//	Apply crossover
-		this->ApplyCrossover(kiddo, papa, crossover_rate);
+		this->ApplyCrossover(kiddo, papa, crossover_type, crossover_rate);
 		
 		//	Apply mutation
 		this->Mutate(kiddo, mutation_rate);
@@ -115,7 +113,12 @@ namespace BitEvolver
 	}
 	
 	//
-	void Breeder::ApplyCrossover(std::shared_ptr<Chromosome> kiddo, std::shared_ptr<Chromosome> parent, double crossover_rate)
+	void Breeder::ApplyCrossover(
+		std::shared_ptr<Chromosome> kiddo,
+		std::shared_ptr<Chromosome> parent,
+		Enums::CrossoverType crossover_type,
+		double crossover_rate
+	)
 	{
 		//
 		int
@@ -124,7 +127,12 @@ namespace BitEvolver
 			i
 			;
 		
-		//
+		//	Only proceed if using sexual crossover
+		if (crossover_type != Enums::CrossoverType::Sexual) {
+			return;
+		}
+		
+		//	For now, don't crossover unless the bit lengths are identical
 		bits_count = kiddo->GetBitCount();
 		if ( parent->GetBitCount() != bits_count ) {
 			throw std::runtime_error("Breeder::ApplyCrossover() - Parent incompatible with Kiddo (bit lengths don't match)");

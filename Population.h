@@ -47,7 +47,13 @@ namespace BitEvolver
 			double GetAverageFitness(std::vector<std::shared_ptr<class Chromosome>> _chromosomes);
 			
 			//
+			void SetCrossoverPoint(double p);
+			double GetCrossoverPoint();
+			void SetCrossoverType(Enums::CrossoverType t);
+			Enums::CrossoverType GetCrossoverType();
+			//
 			void SetMutationRate(double r);
+			double GetMutationRate();
 			
 			//
 			void Evolve();
@@ -56,6 +62,13 @@ namespace BitEvolver
 			//
 			void PrintPopulation();
 			void PrintPopulation(std::vector<std::shared_ptr<class Chromosome>> _chromosomes);
+			
+			//	Constants
+			const static int DEFAULT_POPULATION_SIZE = 100;
+			const static int DEFAULT_MUTATION_RATE = 0.01;
+			//
+			const static Enums::CrossoverType DEFAULT_CROSSOVER_TYPE = Enums::CrossoverType::Sexual;
+			const static int DEFAULT_CROSSOVER_POINT = 0.7;
 			
 		//
 		private:
@@ -68,6 +81,8 @@ namespace BitEvolver
 			std::vector<std::shared_ptr<class Chromosome>> chromosomes;
 			int population_size;
 			bool population_needs_sorting;
+			Enums::CrossoverType crossover_type;
+			double crossover_point;
 			double mutation_rate;
 			int evolution_number;
 			
