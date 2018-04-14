@@ -282,7 +282,7 @@ namespace BitEvolver
 			;
 		
 		//
-		thread_count = std::thread::hardware_concurrency();
+		thread_count = this->GetThreadCountSuggestion();
 		
 		//
 		for ( i=0; i<thread_count; i++) {
@@ -376,6 +376,18 @@ namespace BitEvolver
 		
 		//
 		return this->chromosomes[chromosome_index];
+	}
+	
+	//
+	int Population::GetThreadCountSuggestion()
+	{
+		//
+		int thread_count;
+		
+		//
+		thread_count = std::thread::hardware_concurrency();
+		
+		return thread_count;
 	}
 };
 

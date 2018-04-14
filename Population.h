@@ -89,6 +89,8 @@ namespace BitEvolver
 			std::shared_ptr<Chromosome> BreedChild();
 			std::shared_ptr<Chromosome> PickChromosomeForBreeding();
 			
+			//
+			int GetThreadCountSuggestion();
 	};
 };
 
