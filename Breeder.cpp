@@ -50,6 +50,9 @@ namespace BitEvolver
 		//	Apply mutation
 		this->Mutate(kiddo, mutation_rate);
 		
+		//	Reset kiddo's fitness
+		kiddo->ResetFitness();
+		
 		return kiddo;
 	}
 	
