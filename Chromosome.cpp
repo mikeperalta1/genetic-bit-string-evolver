@@ -10,6 +10,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <mutex>
 
 
 //
@@ -42,6 +43,7 @@ namespace BitEvolver
 	void Chromosome::Randomize()
 	{
 		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
 		int i;
 		
 		//
@@ -57,6 +59,9 @@ namespace BitEvolver
 	void Chromosome::SetBitCount(int count)
 	{
 		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
+		
+		//
 		this->bits_count_desired = count;
 		this->Randomize();
 	}
@@ -70,6 +75,9 @@ namespace BitEvolver
 	//
 	void Chromosome::FlipBit(int index)
 	{
+		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
+		
 		//
 		if ( index >= (int)this->bits.size() ) {
 			throw std::runtime_error("Chromosome::FlipBit() - Tried to flip out of range bit index: " + to_string(index));
@@ -88,6 +96,9 @@ namespace BitEvolver
 	bool Chromosome::GetBit(int index)
 	{
 		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
+		
+		//
 		if ( index >= (int)this->bits.size() ) {
 			throw std::runtime_error("Chromosome::GetBit() - Tried to access out of bounds bit");
 		}
@@ -99,6 +110,9 @@ namespace BitEvolver
 	//
 	void Chromosome::SetBit(int index, bool b)
 	{
+		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
+		
 		//
 		if ( index >= (int)this->bits.size() ) {
 			throw std::runtime_error("Chromosome::GetBit() - Tried to access out of bounds bit");
@@ -168,6 +182,7 @@ namespace BitEvolver
 	string Chromosome::ToString()
 	{
 		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
 		stringstream s;
 		
 		//
@@ -190,6 +205,7 @@ namespace BitEvolver
 	const Chromosome& Chromosome::operator=(const Chromosome& other)
 	{
 		//
+		std::unique_lock<std::recursive_mutex> lock1(this->modification_mutex);
 		int i;
 		
 		//

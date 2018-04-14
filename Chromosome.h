@@ -13,6 +13,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <mutex>
 
 
 //
@@ -74,6 +75,9 @@ namespace BitEvolver
 			
 			//	Fitness
 			double fitness;
+			
+			//	Mutexes
+			std::recursive_mutex modification_mutex;
 	};
 };
 
