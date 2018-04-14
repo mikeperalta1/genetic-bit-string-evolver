@@ -137,6 +137,34 @@ namespace BitEvolver
 	}
 	
 	//
+	void Chromosome::ResetError()
+	{
+		//
+		this->ResetFitness();
+	}
+	
+	//
+	void Chromosome::SetError(double e)
+	{
+		//
+		this->SetFitness(-e);
+	}
+	
+	//
+	void Chromosome::AdjustError(double e)
+	{
+		//
+		this->AdjustFitness(-e);
+	}
+	
+	//
+	double Chromosome::GetError()
+	{
+		//
+		return -this->GetFitness();
+	}
+	
+	//
 	string Chromosome::ToString()
 	{
 		//

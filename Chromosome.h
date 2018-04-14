@@ -48,6 +48,14 @@ namespace BitEvolver
 			void AdjustFitness(double d);
 			double GetFitness();
 			
+			/**
+				Error is just inverted fitness
+			*/
+			void ResetError();
+			void SetError(double e);
+			void AdjustError(double e);
+			double GetError();
+			
 			//
 			std::string ToString();
 			
