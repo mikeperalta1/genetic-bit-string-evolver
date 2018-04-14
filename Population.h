@@ -58,6 +58,7 @@ namespace BitEvolver
 			
 			//
 			void EvaluateFitness(std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback);
+			void EvaluateError(std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback);
 			
 			//
 			void Evolve();
@@ -114,6 +115,10 @@ namespace BitEvolver
 			
 			//
 			void EvaluateFitness_Thread(
+				std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes,
+				std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback
+			);
+			void EvaluateError_Thread(
 				std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes,
 				std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback
 			);
