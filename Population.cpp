@@ -17,12 +17,16 @@
 #include <algorithm>
 #include <thread>
 #include <functional>
+#include <string>
+#include <sstream>
 
 
 //
 namespace BitEvolver
 {
 	//
+	using std::string;
+	using std::stringstream;
 	using std::cout;
 	using std::endl;
 	
@@ -44,6 +48,11 @@ namespace BitEvolver
 		//
 		this->evolution_number = 0;
 		this->population_size = Population::DEFAULT_POPULATION_SIZE;
+		
+		//
+		this->SetElitismType(Population::DEFAULT_ELITISM_TYPE);
+		this->SetElitismRate(Population::DEFAULT_ELITISM_RATE);
+		this->SetElitismCount(Population::DEFAULT_ELITISM_COUNT);
 		
 		//
 		this->SetCrossoverType(Population::DEFAULT_CROSSOVER_TYPE);
@@ -199,6 +208,48 @@ namespace BitEvolver
 	}
 	
 	//
+	void Population::SetElitismType(Enums::ElitismType t)
+	{
+		//
+		this->elitism_type = t;
+	}
+	
+	//
+	Enums::ElitismType Population::GetElitismType()
+	{
+		//
+		return this->elitism_type;
+	}
+	
+	//
+	void Population::SetElitismRate(double r)
+	{
+		//
+		this->elitism_rate = r;
+	}
+	
+	//
+	double Population::GetElitismRate()
+	{
+		//
+		return this->elitism_rate;
+	}
+	
+	//
+	void Population::SetElitismCount(int c)
+	{
+		//
+		this->elitism_count = c;
+	}
+	
+	//
+	int Population::GetElitismCount()
+	{
+		//
+		return this->elitism_count;
+	}
+	
+	//
 	void Population::EvaluateFitness(std::function<double(std::shared_ptr<Chromosome>)> evaluation_callback)
 	{
 		//
@@ -299,11 +350,6 @@ namespace BitEvolver
 			new std::vector<std::shared_ptr<Chromosome>>()
 		);
 		
-		//	Start the new population off with our champion,
-		//	so the best score always carries over (elitism = 1 unit)
-		#warning "Elitism is only 1 right now"
-		population_new->push_back(this->chromosomes[0]);
-		
 		//	Breed the new population
 		this->BreedNewPopulation(population_new, (int)this->chromosomes.size());
 		
@@ -403,7 +449,6 @@ namespace BitEvolver
 	void Population::BreedNewPopulation(std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> population_new, int size)
 	{
 		//
-		std::shared_ptr<RouletteWheel> wheel;
 		std::vector<std::shared_ptr<std::thread>> threads;
 		std::shared_ptr<std::thread> thread;
 		int
@@ -414,20 +459,24 @@ namespace BitEvolver
 		//	First, populate the roulette wheel
 		this->roulette_wheel->SetChromosomes(this->chromosomes);
 		
-		//
-		thread_count = this->GetThreadCountSuggestion();
+		//	Next, seed the population with elites
+		this->SeedPopulationWithElites(population_new);
 		
-		//
+		//	Next, breed until we've reached our new size
+		thread_count = this->GetThreadCountSuggestion();
 		for ( i=0; i<thread_count; i++) {
 			thread = std::shared_ptr<std::thread>(
 				new std::thread(&Population::BreedNewPopulation_Thread, this, population_new, size)
 			);
 			threads.push_back(thread);
 		}
-		
-		//
 		for ( i=0; i<(int)threads.size(); i++) {
 			threads[i]->join();
+		}
+		
+		//	Finally, reset the fitness of the new population
+		for ( i=0; i<(int)population_new->size(); i++ ) {
+			population_new->at(i)->ResetFitness();
 		}
 	}
 	
@@ -450,6 +499,63 @@ namespace BitEvolver
 			}
 			this->breed_mutex.unlock();
 		}
+	}
+	
+	//
+	int Population::DetermineEliteCount()
+	{
+		//
+		int count;
+		
+		//
+		switch( this->elitism_type )
+		{
+			//
+			default:
+			case Enums::ElitismType::None:
+				count = 0;
+				break;
+			
+			//
+			case Enums::ElitismType::Absolute:
+				count = this->elitism_count;
+				break;
+			
+			//
+			case Enums::ElitismType::Rate:
+				count = floor( this->chromosomes.size() * this->elitism_rate );
+				break;
+		}
+		
+		return count;
+	}
+	
+	//
+	void Population::SeedPopulationWithElites(std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> population_new)
+	{
+		//
+		std::unique_lock<std::recursive_mutex> lock(this->population_modification_mutex);
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> elites;
+		std::vector<std::shared_ptr<std::thread>> threads;
+		std::shared_ptr<std::thread> thread;
+		int
+			elites_count,
+			i
+			;
+		
+		//	Determine how many elites to copy
+		elites_count = this->DetermineEliteCount();
+		elites = std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>>(
+			new std::vector<std::shared_ptr<Chromosome>>()
+		);
+		
+		//	First, copy over just the pointers
+		for ( i=0; i<elites_count && i<(int)this->chromosomes.size(); i++) {
+			elites->push_back( this->chromosomes[i] );
+		}
+		
+		//	Then, make them full copies (uses threads)
+		this->CopyChromosomes(elites, population_new);
 	}
 	
 	//
@@ -518,6 +624,75 @@ namespace BitEvolver
 			//	We're done if there was nothing to grab
 			else{
 				break;
+			}
+		}
+	}
+	
+	//
+	void Population::CopyChromosomes(
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes_source,
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes_destination
+	)
+	{
+		//
+		std::vector<std::shared_ptr<std::thread>> threads;
+		std::shared_ptr<std::thread> thread;
+		int
+			threads_count,
+			i
+			;
+		
+		//	Spawn threads
+		threads_count = this->GetThreadCountSuggestion();
+		for ( i=0; i<threads_count; i++) {
+			
+			//
+			thread = std::shared_ptr<std::thread>(
+				new std::thread(&Population::CopyChromosomes_Thread, this, _chromosomes_source, _chromosomes_destination)
+			);
+			threads.push_back(thread);
+		}
+		
+		//	Wait for threads to finish
+		for ( i=0; i<threads_count; i++ ) {
+			threads[i]->join();
+		}
+	}
+	
+	//
+	void Population::CopyChromosomes_Thread(
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes_source,
+		std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> _chromosomes_destination
+	)
+	{
+		//
+		std::shared_ptr<Chromosome>
+			chromosome_original,
+			chromosome_copied
+			;
+		stringstream ss;
+		
+		//
+		while ( _chromosomes_destination->size() < _chromosomes_source->size() )
+		{
+			//	Grab the next slot
+			this->copy_chromosomes_mutex.lock();
+			chromosome_original = nullptr;
+			chromosome_copied = nullptr;
+			if ( _chromosomes_destination->size() < _chromosomes_source->size() ) {
+				
+				//
+				chromosome_copied = std::shared_ptr<Chromosome>(
+					new Chromosome(this->random, 0)
+				);
+				_chromosomes_destination->push_back(chromosome_copied);
+				chromosome_original = _chromosomes_source->at(_chromosomes_destination->size()-1);
+			}
+			this->copy_chromosomes_mutex.unlock();
+			
+			//	Make a full copy of the original, outside the lock
+			if ( chromosome_copied && chromosome_original ) {
+				*chromosome_copied = *chromosome_original;
 			}
 		}
 	}

@@ -15,6 +15,15 @@ namespace BitEvolver
 			None,
 			Sexual
 		};
+		
+		//
+		enum class ElitismType
+		{
+			//
+			None,
+			Rate,
+			Absolute
+		};
 	};
 };
 
