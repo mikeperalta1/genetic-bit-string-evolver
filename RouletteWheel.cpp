@@ -173,6 +173,7 @@ namespace BitEvolver
 			
 			//
 			pair.first = chromosome->GetFitness() - fitness_low;
+			pair.first *= pair.first; //	Square to enhance the difference a little
 			pair.second = chromosome;
 			
 			//
@@ -222,7 +223,9 @@ namespace BitEvolver
 		std::unique_lock<std::recursive_mutex> lock(this->chromosomes_mutex);
 		std::vector<std::pair<double, std::shared_ptr<Chromosome>>> chromosomes_normalized_fitness;
 		std::pair<double,std::shared_ptr<Chromosome>> wheel_slot;
-		double slot_begin_value;
+		double
+			slot_begin_value
+			;
 		
 		//
 		if ( !this->slots_need_population ) {
