@@ -5,6 +5,7 @@
 #include "BitEvolver/Random.h"
 #include "BitEvolver/Population.h"
 #include "BitEvolver/Breeder.h"
+#include "BitEvolver/RouletteWheel.h"
 #include "BitEvolver/Chromosome.h"
 
 
@@ -29,6 +30,7 @@ namespace BitEvolver
 	{
 		//
 		this->InitRandomGenerator();
+		this->InitRouletteWheel();
 		this->InitBreeder();
 		
 		//
@@ -269,6 +271,15 @@ namespace BitEvolver
 	}
 	
 	//
+	void Population::InitRouletteWheel()
+	{
+		//
+		this->roulette_wheel = std::shared_ptr<RouletteWheel>(
+			new RouletteWheel()
+		);
+	}
+	
+	//
 	void Population::InitBreeder()
 	{
 		//
@@ -313,12 +324,16 @@ namespace BitEvolver
 	void Population::BreedNewPopulation(std::shared_ptr<std::vector<std::shared_ptr<Chromosome>>> population_new, int size)
 	{
 		//
+		std::shared_ptr<RouletteWheel> wheel;
 		std::vector<std::shared_ptr<std::thread>> threads;
 		std::shared_ptr<std::thread> thread;
 		int
 			thread_count,
 			i
 			;
+		
+		//	First, populate the roulette wheel
+		this->roulette_wheel->SetChromosomes(this->chromosomes);
 		
 		//
 		thread_count = this->GetThreadCountSuggestion();
@@ -367,8 +382,8 @@ namespace BitEvolver
 			;
 		
 		//	Pick two parents
-		mama = this->PickChromosomeForBreeding();
-		papa = this->PickChromosomeForBreeding();
+		mama = this->roulette_wheel->Spin();
+		papa = this->roulette_wheel->Spin();
 		
 		//
 		kiddo = this->breeder->Breed(
@@ -379,47 +394,6 @@ namespace BitEvolver
 		);
 		
 		return kiddo;
-	}
-	
-	/**
-		(1) We want to pick the best chromosomes to repopulate
-		(2) [not in lecture] We want to add a bit of randomness
-			to the selection process, such that the worst chromosomes
-			can still possibly be picked, and the best can still
-			possibly be not-picked; Their fitness only increases
-			the probability they're picked.
-	*/
-	std::shared_ptr<Chromosome> Population::PickChromosomeForBreeding()
-	{
-		//
-		double normal;
-		int chromosome_index;
-		
-		//
-		this->EnsureSortedPopulation();
-		
-		/**
-			Grab normal with 0 at the mean, and the standard deviation equal
-			to 1/2 of the population size. Then make that an absolute value.
-			This will make top/best chromosomes more likely to be picked,
-				with the far/low end being much less likely
-		*/
-		#warning "Need to upgrade this to Roulette Wheel"
-		//	Repeat as needed, since the normal generator might actually
-		//	give us an out-of-bounds result sometimes
-		while ( true )
-		{
-			//
-			normal = this->random->GetNormal(0, 0.5);
-			chromosome_index = abs( normal * this->chromosomes.size()
-			);
-			if ( chromosome_index >= 0 && chromosome_index < (int)this->chromosomes.size() ) {
-				break;
-			}
-		}
-		
-		//
-		return this->chromosomes[chromosome_index];
 	}
 	
 	//

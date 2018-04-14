@@ -87,10 +87,14 @@ namespace BitEvolver
 			int evolution_number;
 			
 			//
+			std::shared_ptr<class RouletteWheel> roulette_wheel;
+			
+			//
 			std::mutex breed_mutex;
 			
 			//
 			void InitRandomGenerator();
+			void InitRouletteWheel();
 			void InitBreeder();
 			
 			//
@@ -102,7 +106,6 @@ namespace BitEvolver
 			
 			//
 			std::shared_ptr<Chromosome> BreedChild();
-			std::shared_ptr<Chromosome> PickChromosomeForBreeding();
 			
 			//
 			int GetThreadCountSuggestion();
