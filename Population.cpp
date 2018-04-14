@@ -39,9 +39,13 @@ namespace BitEvolver
 	void Population::Reset()
 	{
 		//
-		this->population_size = BIT_EVOLVER_POPULATION_DEFAULT_POPULATION_SIZE;
-		this->SetMutationRate(BIT_EVOLVER_POPULATION_DEFAULT_MUTATE_RATE);
 		this->evolution_number = 0;
+		this->population_size = Population::DEFAULT_POPULATION_SIZE;
+		
+		//
+		this->SetCrossoverType(Population::DEFAULT_CROSSOVER_TYPE);
+		this->SetCrossoverPoint(Population::DEFAULT_CROSSOVER_POINT);
+		this->SetMutationRate(Population::DEFAULT_MUTATION_RATE);
 		
 		//
 		this->RandomizePopulation(this->population_size);
