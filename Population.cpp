@@ -56,7 +56,12 @@ namespace BitEvolver
 		
 		//
 		this->SetCrossoverType(Population::DEFAULT_CROSSOVER_TYPE);
+		this->SetCrossoverOrder(Population::DEFAULT_CROSSOVER_ORDER);
+		this->SetCrossoverBounds(Population::DEFAULT_CROSSOVER_BOUNDS);
 		this->SetCrossoverPoint(Population::DEFAULT_CROSSOVER_POINT);
+		this->SetCrossoverPointStandardDeviation(Population::DEFAULT_CROSSOVER_POINT_STD);
+		
+		//
 		this->SetMutationRate(Population::DEFAULT_MUTATION_RATE);
 		
 		//
@@ -166,6 +171,48 @@ namespace BitEvolver
 	}
 	
 	//
+	void Population::SetCrossoverType(Enums::CrossoverType t)
+	{
+		//
+		this->crossover_type = t;
+	}
+	
+	//
+	Enums::CrossoverType Population::GetCrossoverType()
+	{
+		//
+		return this->crossover_type;
+	}
+	
+	//
+	void Population::SetCrossoverOrder(Enums::CrossoverOrder o)
+	{
+		//
+		this->crossover_order = o;
+	}
+	
+	//
+	Enums::CrossoverOrder Population::GetCrossoverOrder()
+	{
+		//
+		return this->crossover_order;
+	}
+	
+	//
+	void Population::SetCrossoverBounds(Enums::CrossoverBounds b)
+	{
+		//
+		this->crossover_bounds = b;
+	}
+	
+	//
+	Enums::CrossoverBounds Population::GetCrossoverBounds()
+	{
+		//
+		return this->crossover_bounds;
+	}
+	
+	//
 	void Population::SetCrossoverPoint(double p)
 	{
 		//
@@ -180,17 +227,17 @@ namespace BitEvolver
 	}
 	
 	//
-	void Population::SetCrossoverType(Enums::CrossoverType t)
+	void Population::SetCrossoverPointStandardDeviation(double std)
 	{
 		//
-		this->crossover_type = t;
+		this->crossover_point_std = std;
 	}
 	
 	//
-	Enums::CrossoverType Population::GetCrossoverType()
+	double Population::GetCrossoverPointStandardDeviation()
 	{
 		//
-		return this->crossover_type;
+		return this->crossover_point_std;
 	}
 	
 	//
@@ -710,14 +757,13 @@ namespace BitEvolver
 		papa = this->roulette_wheel->Spin();
 		
 		//
-		//cout << "Roulette Wheel (mama): " << mama->ToString() << endl;
-		//cout << "Roulette Wheel (papa): " << papa->ToString() << endl;
-		
-		//
 		kiddo = this->breeder->Breed(
 			mama, papa,
 			this->crossover_type,
+			this->crossover_order,
+			this->crossover_bounds,
 			this->crossover_point,
+			this->crossover_point_std,
 			this->mutation_rate
 		);
 		

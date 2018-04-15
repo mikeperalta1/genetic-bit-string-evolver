@@ -48,10 +48,17 @@ namespace BitEvolver
 			double GetAverageFitness(std::vector<std::shared_ptr<class Chromosome>> _chromosomes);
 			
 			//
-			void SetCrossoverPoint(double p);
-			double GetCrossoverPoint();
 			void SetCrossoverType(Enums::CrossoverType t);
 			Enums::CrossoverType GetCrossoverType();
+			void SetCrossoverOrder(Enums::CrossoverOrder o);
+			Enums::CrossoverOrder GetCrossoverOrder();
+			void SetCrossoverBounds(Enums::CrossoverBounds b);
+			Enums::CrossoverBounds GetCrossoverBounds();
+			void SetCrossoverPoint(double p);
+			double GetCrossoverPoint();
+			void SetCrossoverPointStandardDeviation(double std);
+			double GetCrossoverPointStandardDeviation();
+			
 			//
 			void SetMutationRate(double r);
 			double GetMutationRate();
@@ -76,14 +83,17 @@ namespace BitEvolver
 			void PrintPopulation(std::vector<std::shared_ptr<class Chromosome>> _chromosomes);
 			
 			//	Constants
-			const static int					DEFAULT_POPULATION_SIZE =	100;
-			const static Enums::ElitismType		DEFAULT_ELITISM_TYPE =		Enums::ElitismType::Rate;
-			constexpr static double				DEFAULT_ELITISM_RATE =		0.01;
-			const static int					DEFAULT_ELITISM_COUNT =		1;
-			constexpr static double				DEFAULT_MUTATION_RATE =		0.01;
+			const static int					DEFAULT_POPULATION_SIZE =		100;
+			const static Enums::ElitismType		DEFAULT_ELITISM_TYPE =			Enums::ElitismType::Rate;
+			constexpr static double				DEFAULT_ELITISM_RATE =			0.01;
+			const static int					DEFAULT_ELITISM_COUNT =			1;
+			constexpr static double				DEFAULT_MUTATION_RATE =			0.01;
 			//
-			const static Enums::CrossoverType DEFAULT_CROSSOVER_TYPE = Enums::CrossoverType::Sexual;
-			const static int DEFAULT_CROSSOVER_POINT = 0.7;
+			const static Enums::CrossoverType	DEFAULT_CROSSOVER_TYPE =		Enums::CrossoverType::Sexual;
+			const static Enums::CrossoverOrder	DEFAULT_CROSSOVER_ORDER = 		Enums::CrossoverOrder::MamaPapa;
+			const static Enums::CrossoverBounds	DEFAULT_CROSSOVER_BOUNDS =		Enums::CrossoverBounds::Wrap;
+			constexpr static double				DEFAULT_CROSSOVER_POINT =		0.7;
+			constexpr static double				DEFAULT_CROSSOVER_POINT_STD =	0.25;
 			
 		//
 		private:
@@ -100,7 +110,10 @@ namespace BitEvolver
 			
 			//
 			Enums::CrossoverType crossover_type;
+			Enums::CrossoverOrder crossover_order;
+			Enums::CrossoverBounds crossover_bounds;
 			double crossover_point;
+			double crossover_point_std;
 			double mutation_rate;
 			Enums::ElitismType elitism_type;
 			double elitism_rate;

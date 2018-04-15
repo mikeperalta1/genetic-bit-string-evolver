@@ -17,6 +17,22 @@ namespace BitEvolver
 		};
 		
 		//
+		enum class CrossoverOrder
+		{
+			//
+			MamaPapa,
+			ByFitness
+		};
+		
+		//
+		enum class CrossoverBounds
+		{
+			//
+			Clip,
+			Wrap
+		};
+		
+		//
 		enum class ElitismType
 		{
 			//

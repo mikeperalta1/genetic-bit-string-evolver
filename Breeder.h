@@ -21,7 +21,10 @@ namespace BitEvolver
 				std::shared_ptr<class Chromosome> mama,
 				std::shared_ptr<class Chromosome> papa,
 				Enums::CrossoverType crossover_type,
-				double crossover_rate,
+				Enums::CrossoverOrder crossover_order,
+				Enums::CrossoverBounds crossover_bounds,
+				double crossover_point,
+				double crossover_point_std,
 				double mutation_rate
 			);
 			
@@ -35,12 +38,19 @@ namespace BitEvolver
 			std::shared_ptr<class Random> random;
 			
 			//
-			int PickRandomCrossoverPoint(std::shared_ptr<class Chromosome> chromosome, double crossover_rate);
+			int PickRandomCrossoverPoint(
+				std::shared_ptr<class Chromosome> chromosome,
+				Enums::CrossoverBounds crossover_bounds,
+				double crossover_point,
+				double crossover_point_std
+			);
 			void ApplyCrossover(
 				std::shared_ptr<class Chromosome> kiddo,
 				std::shared_ptr<class Chromosome> parent,
 				Enums::CrossoverType crossover_type,
-				double crossover_rate
+				Enums::CrossoverBounds crossover_bounds,
+				double crossover_point,
+				double crossover_point_std
 			);
 	};
 };
