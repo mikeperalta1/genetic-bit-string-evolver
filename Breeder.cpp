@@ -60,10 +60,10 @@ namespace BitEvolver
 	void Breeder::Mutate(std::shared_ptr<Chromosome> chromosome, double mutation_rate)
 	{
 		//
-		int i, size;
-		
-		//
-		#warning "For efficiency, let's instead roll the number of bits to flip in advance, and loop that many times (faster than rolling for every bit)"
+		int
+			i,
+			size
+			;
 		
 		//
 		size = chromosome->GetBitCount();
