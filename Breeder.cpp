@@ -81,6 +81,9 @@ namespace BitEvolver
 		//	Reset kiddo's fitness
 		kiddo->ResetFitness();
 		
+		//	Increment kiddo's generation number
+		kiddo->IncrementGenerationNumber();
+		
 		return kiddo;
 	}
 	

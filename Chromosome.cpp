@@ -26,6 +26,11 @@ namespace BitEvolver
 	{
 		//
 		this->random = _random;
+		
+		//
+		this->generation_number = 1;
+		
+		//
 		this->SetBitCount(_bits);
 		
 		//
@@ -53,6 +58,27 @@ namespace BitEvolver
 		for ( i=0; i<this->bits_count_desired; i++ ) {
 			this->bits.push_back(this->random->GetInt(0, 1));
 		}
+	}
+	
+	//
+	void Chromosome::SetGenerationNumber(int g)
+	{
+		//
+		this->generation_number = g;
+	}
+	
+	//
+	void Chromosome::IncrementGenerationNumber()
+	{
+		//
+		this->generation_number++;
+	}
+	
+	//
+	int Chromosome::GetGenerationNumber()
+	{
+		//
+		return this->generation_number;
 	}
 	
 	//
@@ -120,6 +146,36 @@ namespace BitEvolver
 		
 		//
 		this->bits[index] = b;
+	}
+	
+	//
+	void Chromosome::SetBits(string s)
+	{
+		//
+		std::unique_lock<std::recursive_mutex> lock(this->modification_mutex);
+		size_t i;
+		char c;
+		
+		//
+		this->SetBitCount( (int) s.size() );
+		
+		//
+		for ( i=0; i<s.size(); i++ ) {
+			
+			//
+			c = s[i];
+			if ( c == '1' ) {
+				this->bits[i] = true;
+			}
+			else if ( c == '0' ) {
+				this->bits[i] = false;
+			}
+			else{
+				stringstream ss;
+				ss << "Chromosome::SetBits() - Invalid character '" << c << "' (" << (int)c << ") in bit string input";
+				throw std::runtime_error( ss.str() );
+			}
+		}
 	}
 	
 	//
@@ -210,6 +266,7 @@ namespace BitEvolver
 		
 		//
 		this->random = other.random;
+		this->generation_number = other.generation_number;
 		this->bits = other.bits;
 		this->bits_count_desired = other.bits_count_desired;
 		this->fitness = other.fitness;

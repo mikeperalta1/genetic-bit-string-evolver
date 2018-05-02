@@ -20,6 +20,9 @@
 namespace BitEvolver
 {
 	//
+	using std::string;
+	
+	//
 	class Chromosome
 	{
 		//
@@ -33,6 +36,11 @@ namespace BitEvolver
 			void Randomize();
 			
 			//
+			void SetGenerationNumber(int g);
+			void IncrementGenerationNumber();
+			int GetGenerationNumber();
+			
+			//
 			void SetBitCount(int count);
 			int GetBitCount();
 			
@@ -42,6 +50,7 @@ namespace BitEvolver
 			//
 			bool GetBit(int index);
 			void SetBit(int index, bool b);
+			void SetBits(string s);
 			
 			//
 			void ResetFitness();
@@ -68,6 +77,9 @@ namespace BitEvolver
 			
 			//	Random number generator
 			std::shared_ptr<class Random> random;
+			
+			//
+			int generation_number;
 			
 			//
 			std::vector<bool> bits;
