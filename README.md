@@ -60,19 +60,19 @@ Our encoder would then represent this program with the following bit string:
 
 The following features have been implemented thus far:
 
-	* **Sexual Reproduction**
-		Two parent Chromosomes are selected, and a simple crossover operator is used to combine their bits into a single child Chromosome, before applying mutation.
+* **Sexual Reproduction**
+	Two parent Chromosomes are selected, and a simple crossover operator is used to combine their bits into a single child Chromosome, before applying mutation.
 
-	* **Asexual Reproduction**
-		One parent Chromosome duplicates itself exactly into a child Chromosome, before applying mutation
+* **Asexual Reproduction**
+	One parent Chromosome duplicates itself exactly into a child Chromosome, before applying mutation
 
-	* **Roulette Wheel Selection**
-		When choosing parent Chromosomes to produce offspring, a method is used to allow Chromosomes that have higher fitness to reproduce more often, yet without guaranteeing any fit Chromosome will reproduce. Less fit Chromosomes will have less chance to reproduce, but aren't guaranteed *not* to reproduce. 
+* **Roulette Wheel Selection**
+	When choosing parent Chromosomes to produce offspring, a method is used to allow Chromosomes that have higher fitness to reproduce more often, yet without guaranteeing any fit Chromosome will reproduce. Less fit Chromosomes will have less chance to reproduce, but aren't guaranteed *not* to reproduce. 
 
-	* **Elitism**
-		Before evolving a population of Chromosomes, a few of the *most fit* Chromosomes are copied directly into the next population without modification, in an attempt to ensure that a population's *Champions* (most fit Chromosomes) never get worse as a result of evolution. Elitism has two modes, currently:
-			* *Rate* : The number of *champions* is determined by taking a percentage of the total population. A rate of 2% with a population size of 200 would result in 4 *champions*
-			* *Absolute* : The number of *champions* can be set to any whole number manually
+* **Elitism**
+	Before evolving a population of Chromosomes, a few of the *most fit* Chromosomes are copied directly into the next population without modification, in an attempt to ensure that a population's *Champions* (most fit Chromosomes) never get worse as a result of evolution. Elitism has two modes, currently:
+	* *Rate* : The number of *champions* is determined by taking a percentage of the total population. A rate of 2% with a population size of 200 would result in 4 *champions*
+	* *Absolute* : The number of *champions* can be set to any whole number manually
 
 
 
