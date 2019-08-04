@@ -74,6 +74,9 @@ The following features have been implemented thus far:
 	* *Rate* : The number of *champions* is determined by taking a percentage of the total population. A rate of 2% with a population size of 200 would result in 4 *champions*
 	* *Absolute* : The number of *champions* can be set to any whole number manually
 
+## Special Thank You
+
+I would like to thank my old professor, Christopher Ryu, Ph.D., for teaching a great Artificial Intelligence class and inspiring me to create this project while taking his class.
 
 
 
